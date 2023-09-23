@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "48933063511",
+    "project_id": "flutter-projects-58fe8",
+    "storage_bucket": "flutter-projects-58fe8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48933063511:android:6b00eb94348a4565c60c12",
+        "android_client_info": {
+          "package_name": "com.tinyena.push_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7fLVN0d-FmW5_cQpP-4_4RHbx_UihIvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
