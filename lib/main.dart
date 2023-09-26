@@ -25,8 +25,8 @@ import 'config/theme/app_theme.dart';
 //lo configuramos con --> flutterfire configure
 //antes he tenido que añadir la variable de entorno ver --> https://stackoverflow.com/questions/71487625/how-can-i-resolve-zsh-command-not-found-flutterfire-in-macos
 //una vez iniciado con la instruccion flutterfire configure seleccionamos el id del proyecto que tenemos
-//en firebase si no se sabe ir a Firebase y mirarlo 
-// seguimos las instrucciones de configuracion y nos crea en la carpeta lib del proyecto el archivo firebase_options.dart
+//en firebase si no se sabe el id ir a Firebase y mirarlo en mid proyectos creados
+//seguimos las instrucciones de configuracion y nos crea en la carpeta lib del proyecto el archivo firebase_options.dart
 //donde configura las apiKey, apiId etc. automaticamente para android i ios
 
 void main() async{

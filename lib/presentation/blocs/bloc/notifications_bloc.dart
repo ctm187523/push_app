@@ -16,16 +16,29 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   //constuctor
   NotificationsBloc() : super(const NotificationsState()) {
 
-
-    // on<NotificationsEvent>((event, emit) {
-    //   // TODO: implement event handler
-    // });
+    //evento que vamos a manejar que es el de tipo NotificationsStatusChanged 
+    //creado en la clase NotificationsEvent, para manejar la propiedad del estate AuthorizationStatus
+    //como argumento usamos el metodo privado creada abajo _notificationStatusChanged, lo mandamos como 
+    //referencia
+    on<NotificationsStatusChanged>(_notificationStatusChanged);
   }
 
   //metodo estatico para inicializar Firebase sin instanciar la clase al ser estatico
   static Future<void> initializeFCM() async {
     await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
+  //creamos un metodo privado(_) para manejar el evento del cambio de estado de la propiedad del
+  //state AuthorizationStatus, en el primer parametro event usamos un objeto de la clase NotificationsStatusChanged 
+  //creada en la clase NotificationsEvent
+  void _notificationStatusChanged(NotificationsStatusChanged event,Emitter<NotificationsState> emit) {
+    //emitimos el nuevo valor del status, usando el argumento event recibido
+    emit(
+      state.copyWith(
+        status: event.status
+      )
     );
   }
 
@@ -45,6 +58,9 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       sound: true,
     );
 
-    settings.authorizationStatus;
+    //con add llamamos al evento creado en la clase NotificationStatusChanged
+    //dentro de la clase  NotificationsEvent
+    add( NotificationsStatusChanged(settings.authorizationStatus));
+    
   }
 }
