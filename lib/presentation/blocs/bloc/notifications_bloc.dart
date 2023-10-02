@@ -7,6 +7,16 @@ import 'package:push_app/firebase_options.dart';
 part 'notifications_event.dart';
 part 'notifications_state.dart';
 
+//enviamos notifiaciones desde firebase, vamos donde tenemos el projecto, vamos en el menu de la 
+//izquierda a participacion, luego a messaging, luego arriba crear la primera campaña y hacemos check
+// en la opcion de arrina Mensajes de Firebase Notifications y pulsamos crear, lo de google analytics
+//lo podemos quitar dando a la cruz de la derecha, llenamos el formulario que sera como se vera la notifiacion
+//titulo, el body, la imagen no debe pesar mas de 300k
+//damos a siguiente, orientacion ponemos para android y cuando ahora, rellenamos finalmente las opciones adicionales
+//podemos habilitar el sonido y el vencimiento de la notifiacion, finalmente
+//guardamos como borrador,para enviar la notificacion de prueba damos a editar
+//en el borrador, arriba a la derecha enviar mensaje de prueba, colocamos el token del dispositivo
+
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
   //propiedades
@@ -22,9 +32,14 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     //referencia
     on<NotificationsStatusChanged>(_notificationStatusChanged);
 
+    //verifiacion del estado de las notificaciones
     //llamamos al metodo creado abajo en el consturctor despues de la creacion
     //del listener justo arriba
     _initialStatusCheck(); 
+
+    //Listener para notificaciones en Foreground(mientras la app esta activa, en primer plano)
+    //llamamos a la funcion creada abajo 
+    _onForegroundMessage();  
   }
 
   //metodo estatico para inicializar Firebase sin instanciar la clase al ser estatico
@@ -70,6 +85,27 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 
      final token = await messaging.getToken();
      print(token);
+  }
+
+  //metodo para recibir notificaciones hacemos en este metodo las de tipo Foreground
+  //que son las que recibimos cuando la aplicacion esta activa, hay de tipo Backgroud
+  //que es cuando la aplicacion esta en segundo plano y de tipo Terminated cuando la 
+  //aplicacion no esta corriendo
+  void _handleRemoteMessage( RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.data}');
+
+    if (message.notification == null) return;
+    
+    print('Message also contained a notification: ${message.notification}');
+    
+  }
+
+  //metodo para leer el evento que es un stream con las notificaciones Foreground, al ser un Stream solo
+  //lo inicializamos una vez en el cosntructor
+  void _onForegroundMessage(){
+    //llamamos al metodo creado arriba,codigo copiado de -->  https://firebase.flutter.dev/docs/messaging/usage
+    FirebaseMessaging.onMessage.listen(_handleRemoteMessage);
   }
 
   //metodos de gestor de estado
