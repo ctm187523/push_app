@@ -16,11 +16,15 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   //constuctor
   NotificationsBloc() : super(const NotificationsState()) {
 
-    //evento que vamos a manejar que es el de tipo NotificationsStatusChanged 
+    //evento,listener,  que vamos a manejar que es el de tipo NotificationsStatusChanged 
     //creado en la clase NotificationsEvent, para manejar la propiedad del estate AuthorizationStatus
     //como argumento usamos el metodo privado creada abajo _notificationStatusChanged, lo mandamos como 
     //referencia
     on<NotificationsStatusChanged>(_notificationStatusChanged);
+
+    //llamamos al metodo creado abajo en el consturctor despues de la creacion
+    //del listener justo arriba
+    _initialStatusCheck(); 
   }
 
   //metodo estatico para inicializar Firebase sin instanciar la clase al ser estatico
@@ -40,6 +44,32 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
         status: event.status
       )
     );
+    //llamamos al metodo de abajo para obtener el Token, cuando el estado de la aplicacion cambia
+    _getFCMToken(); 
+  }
+
+  void _initialStatusCheck() async{
+    //usamos el objeto messaging creado arriba de tipo  FirebaseMessaging para obtener el estado
+    final settings = await messaging.getNotificationSettings();
+    //llamamos al evento para conocer el estado en esta funcion _initialStatusCheck()
+    //llamada desde el constructor solo para informarnos del estado, sin llamar el 
+    //metodo requestPermission creado abajo
+    add( NotificationsStatusChanged(settings.authorizationStatus));
+  }
+
+  //metodo para obtener el Token en Firebase, el token sera para el dispositivo donde se usa, la aplicacion
+  //siempre tendra el mismo token siempre que no se desinstale y se vuelva a instalar entonces obtendria un nuevo token
+  //el token sirve para que desde firebase podamos mandar informacion a un dispositivo con un token en concreto
+  //sin ese token no recibira la informacion
+  void _getFCMToken() async{
+
+    //nos informamos primero del estado usando el objeto messaging creado arriba de tipo  FirebaseMessaging para que solo reciba
+    //el toquen si nuestro estado es autorizado 
+     final settings = await messaging.getNotificationSettings();
+     if( settings.authorizationStatus != AuthorizationStatus.authorized ) return;
+
+     final token = await messaging.getToken();
+     print(token);
   }
 
   //metodos de gestor de estado
@@ -61,6 +91,5 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     //con add llamamos al evento creado en la clase NotificationStatusChanged
     //dentro de la clase  NotificationsEvent
     add( NotificationsStatusChanged(settings.authorizationStatus));
-    
   }
 }
