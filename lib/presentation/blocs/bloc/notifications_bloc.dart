@@ -7,6 +7,7 @@ import 'package:push_app/firebase_options.dart';
 part 'notifications_event.dart';
 part 'notifications_state.dart';
 
+//ENVIAR NOTIFICACIONES DESDE FIREBASE
 //enviamos notifiaciones desde firebase, vamos donde tenemos el projecto, vamos en el menu de la 
 //izquierda a participacion, luego a messaging, luego arriba crear la primera campaña y hacemos check
 // en la opcion de arrina Mensajes de Firebase Notifications y pulsamos crear, lo de google analytics
@@ -16,6 +17,16 @@ part 'notifications_state.dart';
 //podemos habilitar el sonido y el vencimiento de la notifiacion, finalmente
 //guardamos como borrador,para enviar la notificacion de prueba damos a editar
 //en el borrador, arriba a la derecha enviar mensaje de prueba, colocamos el token del dispositivo
+
+//metodo fuera de la clase (top-level function) ver --> https://firebase.flutter.dev/docs/messaging/usage/
+//para recibir notificaciones push cuando la aplicacion esta en background y terminada, esta funcion es llamada desde el main
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.messageId}");
+}
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
 

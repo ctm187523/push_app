@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:push_app/config/router/app_router.dart';
@@ -33,6 +34,9 @@ void main() async{
 
   //usamos en el main la configuracion con Firebase, para ello hemos puesto la funcion main asincrona
   WidgetsFlutterBinding.ensureInitialized();
+  //llamamos a la funcion firebaseMessagingBackgroundHandler creada al inicio en la clase NotificationsBloc
+  //es el registro de la funcion
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await NotificationsBloc.initializeFCM(); //llamamos al metodo estatico creado en NotificationsBloc para iniciar Firebase
 
   //ponemos el bloc para controlar el estado en el punto mas alto de la aplicacion
