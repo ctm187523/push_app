@@ -18,3 +18,11 @@ class NotificationsStatusChanged extends NotificationsEvent {
   //constructor
   NotificationsStatusChanged(this.status);
 }
+
+//creamos una clase que recibe los PushMessage del notifications_bloc
+class NotificationReceived extends NotificationsEvent {
+
+  final PushMessage notification;
+
+  NotificationReceived(this.notification);
+}

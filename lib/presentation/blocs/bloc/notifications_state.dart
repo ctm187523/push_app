@@ -3,7 +3,7 @@ part of 'notifications_bloc.dart';
 class NotificationsState extends Equatable {
 
   final AuthorizationStatus status; //objeto de la clase AuthorizationStatus de firebase_messaging para saber si se puden usar las notificaciones
-  final List<dynamic> notifications; //modelo de notificaciones
+  final List<PushMessage> notifications; //modelo de notificaciones usamos la clase creada en domain/entities
 
   //constructor
   const NotificationsState({
@@ -14,7 +14,7 @@ class NotificationsState extends Equatable {
   //creamos un copyWith para crear copias del estado
   NotificationsState copyWith({
     AuthorizationStatus? status,
-    List<dynamic>? notifications,
+    List<PushMessage>? notifications,
   }) => NotificationsState( //si no vienen ya que son opcionales usamos la de la clase
     status: status ?? this.status,
     notifications: notifications ?? this.notifications

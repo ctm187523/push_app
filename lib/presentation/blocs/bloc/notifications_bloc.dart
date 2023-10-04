@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:push_app/domain/entities/push_message.dart';
 import 'package:push_app/firebase_options.dart';
 
 part 'notifications_event.dart';
@@ -43,6 +46,9 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     //referencia
     on<NotificationsStatusChanged>(_notificationStatusChanged);
 
+    //Creamos el listener para estar a la escucha de las notificaciones, 
+     on<NotificationReceived>(_onPushMessageReceived);
+
     //verifiacion del estado de las notificaciones
     //llamamos al metodo creado abajo en el consturctor despues de la creacion
     //del listener justo arriba
@@ -74,6 +80,18 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     _getFCMToken(); 
   }
 
+  //manejamos el evento para el array de notificacioens de tipo PushMessage
+  void _onPushMessageReceived(NotificationReceived event, Emitter<NotificationsState> emit){
+
+    emit(
+      state.copyWith(
+        //usamos el spread para crear un nuevo estado
+        notifications: [ event.notification, ...state.notifications]
+      )
+    );
+  }
+
+  //metodo para obtener el estado actual
   void _initialStatusCheck() async{
     //usamos el objeto messaging creado arriba de tipo  FirebaseMessaging para obtener el estado
     final settings = await messaging.getNotificationSettings();
@@ -103,13 +121,28 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   //que es cuando la aplicacion esta en segundo plano y de tipo Terminated cuando la 
   //aplicacion no esta corriendo
   void _handleRemoteMessage( RemoteMessage message) {
-    print('Got a message whilst in the foreground!');
-    print('Message data: ${message.data}');
-
+   
     if (message.notification == null) return;
     
-    print('Message also contained a notification: ${message.notification}');
+    //usamos la entidad la clase creada en domain(entities)
+    final notification = PushMessage(
+      //puede ser opcional, tratamos la respuesta usando replaceAll para que luego cuando usemos
+      //goRouter no de problemas y venga sin caracteres especiales, si no viene creamos un String vacio
+      messageId: message.messageId
+       ?.replaceAll(':', '').replaceAll('%','')
+       ?? '',
+      title: message.notification!.title ?? '', //si no viene String vacio
+      body: message.notification!.body ?? '',
+      sentDate: message.sentTime ?? DateTime.now(),
+      data: message.data,
+      imageUrl: Platform.isAndroid //discriminamos si es Android o Apple la plataforma
+        ? message.notification!.android?.imageUrl
+        : message.notification!.apple?.imageUrl
+    );
     
+    //mandamos el objeto PushMessage(notifiation)
+    add(NotificationReceived(notification));
+
   }
 
   //metodo para leer el evento que es un stream con las notificaciones Foreground, al ser un Stream solo
