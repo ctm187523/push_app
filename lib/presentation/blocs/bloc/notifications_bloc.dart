@@ -47,7 +47,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     on<NotificationsStatusChanged>(_notificationStatusChanged);
 
     //Creamos el listener para estar a la escucha de las notificaciones, 
-     on<NotificationReceived>(_onPushMessageReceived);
+    on<NotificationReceived>(_onPushMessageReceived);
 
     //verifiacion del estado de las notificaciones
     //llamamos al metodo creado abajo en el consturctor despues de la creacion
@@ -120,7 +120,8 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   //que son las que recibimos cuando la aplicacion esta activa, hay de tipo Backgroud
   //que es cuando la aplicacion esta en segundo plano y de tipo Terminated cuando la 
   //aplicacion no esta corriendo
-  void _handleRemoteMessage( RemoteMessage message) {
+  //el metodo es publico lo usa en el main en la clase HandleNotificationInteractionState
+  void handleRemoteMessage( RemoteMessage message) {
    
     if (message.notification == null) return;
     
@@ -149,7 +150,7 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   //lo inicializamos una vez en el cosntructor
   void _onForegroundMessage(){
     //llamamos al metodo creado arriba,codigo copiado de -->  https://firebase.flutter.dev/docs/messaging/usage
-    FirebaseMessaging.onMessage.listen(_handleRemoteMessage);
+    FirebaseMessaging.onMessage.listen(handleRemoteMessage);
   }
 
   //metodos de gestor de estado
@@ -171,5 +172,18 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     //con add llamamos al evento creado en la clase NotificationStatusChanged
     //dentro de la clase  NotificationsEvent
     add( NotificationsStatusChanged(settings.authorizationStatus));
+  }
+
+  //metodo para obtener una notificacion push(de tipo PushMessage) si existe
+  PushMessage? getMessageById( String pushMessageId) {
+
+    //evaluamos si exite alguna notificacion que tenga el id que recibimos por parametro en la funcion
+    //usamos el metodo any de la clase Iterable para buscar si existe una notifiacion de tipo PushMeassage con ese Id
+    final exist = state.notifications.any((element) => element.messageId == pushMessageId);
+    if ( !exist ) return null;
+
+    //si existe devolvemos la notificacion de tipo PushMessage,
+    //usamos el metodo firstWhere de la clase Iterable para buscar la notificacion
+    return state.notifications.firstWhere((element) => element.messageId == pushMessageId);
   }
 }

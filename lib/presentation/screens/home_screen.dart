@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:push_app/presentation/blocs/bloc/notifications_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -48,12 +49,17 @@ class _HomeView extends StatelessWidget {
         final notification = notifications[index];
 
         return ListTile(
-          //TODO 4: Completar informacion
           title: Text(notification.title),
           subtitle: Text(notification.body),
           leading: notification.imageUrl != null
             ? Image.network( notification.imageUrl!)
-            : null
+            : null,
+          //al tocar el elemento de la lista usamos Go Router para mandar a la pantalla DetailsScreen
+          //pasandole por parametro el id de la notificacion usamos ontap para que se dispare al ser 
+          //tocada una de las notificaciones
+          onTap: () {
+            context.push('/push-details/${ notification.messageId}');
+          },
         );
       },
     );
