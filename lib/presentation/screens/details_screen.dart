@@ -26,7 +26,7 @@ class DetailsScreen extends StatelessWidget {
       ),
       body: ( message != null)
         ? _DetailsView(message: message)
-        : const Center( child: Text('Notificación no exister'))
+        : const Center( child: Text('Notificación no existe'))
     );
   }
 }

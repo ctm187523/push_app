@@ -30,6 +30,18 @@ import 'config/theme/app_theme.dart';
 //seguimos las instrucciones de configuracion y nos crea en la carpeta lib del proyecto el archivo firebase_options.dart
 //donde configura las apiKey, apiId etc. automaticamente para android i ios
 
+
+//para enviar las notificaciones necesitamos crear un bearer token para ello usamos en el directorio del ordenador Flutter/firebase-get-bearer-token
+//de Fernando Herrera y seguimos las instruccionesd del Readme
+//en la web --> https://console.firebase.google.com/project/flutter-projects-58fe8/settings/serviceaccounts/adminsdk?hl=es-419 creamos una clave privada necesaria para llevar a cabo el envio de notificaciones
+//ver video Servidor para obtener Bearer Token en el curso
+//para enviar notificaciones ver video Rest-Forma recomendada
+
+//en la seccion 23 instalamos las flutter_local_notificationc con -->flutter pub add flutter_local_notifications
+//estas son notificaciones de tipo local no vienen de un servidor
+//ver --> https://pub.dev/packages/flutter_local_notifications#gradle-setup 
+//para los pasos a seguir de configuracion de notificaciones locales
+
 void main() async{
 
   //usamos en el main la configuracion con Firebase, para ello hemos puesto la funcion main asincrona
@@ -81,8 +93,8 @@ class HandleNotificationInteractionState extends StatefulWidget {
 
 class __HandleNotificationInteractionStateState extends State<HandleNotificationInteractionState> {
   
-   // It is assumed that all messages contain a data field with the key 'type'
-  Future<void> setupInteractedMessage() async {
+    // It is assumed that all messages contain a data field with the key 'type'
+    Future<void> setupInteractedMessage() async {
     // Get any messages which caused the application to open from
     // a terminated state.
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
