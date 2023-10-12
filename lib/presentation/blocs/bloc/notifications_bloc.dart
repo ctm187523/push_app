@@ -38,8 +38,22 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   //ver --> https://firebase.flutter.dev/docs/messaging/permissions 
   FirebaseMessaging messaging = FirebaseMessaging.instance;  //me permite escuchar y ver mensajeria a traves del objeto creado messaging
   
+  int pushNumberId = 0; //contador para los id de las notificaciones locales
+  
+  //propiedades
+  //funcion para manejar los permisos de las notificaciones locales, puede ser opcional ?
+  final Future<void> Function()? requestLocalNotificationsPermissions;
+  //funcion para mostrar las notificaciones, puede ser opcional
+  final void Function({required int id, String? title,String? body,String? data,
+  })? showLocalNotification; 
+
+
+
   //constuctor
-  NotificationsBloc() : super(const NotificationsState()) {
+  NotificationsBloc({
+    this.requestLocalNotificationsPermissions,
+    this.showLocalNotification
+  }) : super(const NotificationsState()) {
 
     //evento,listener,  que vamos a manejar que es el de tipo NotificationsStatusChanged 
     //creado en la clase NotificationsEvent, para manejar la propiedad del estate AuthorizationStatus
@@ -142,9 +156,19 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
         : message.notification!.apple?.imageUrl
     );
     
-    //mandamos el objeto PushMessage(notifiation)
+    //mandamos el objeto PushMessage(notification)
     add(NotificationReceived(notification));
 
+    //llamamos al metodo showLocalNotification recibido por parametro para gestionar las notificaciones locales, si no es nulo
+    if(showLocalNotification != null){
+        showLocalNotification!(
+        id: ++pushNumberId, //usamso al variable creada al inicio, lo decrementa y luego lo utiliza
+        body: notification.body,
+        data: notification.messageId, //lo usamos para identificar las notificaciones locales y asi poder redirigirlas con goRouter para ver los detalles de la notificacion
+        title: notification.title,
+        );
+    }
+   
   }
 
   //metodo para leer el evento que es un stream con las notificaciones Foreground, al ser un Stream solo
@@ -170,8 +194,12 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
       sound: true,
     );
     
-    //llamamos al metodo creado en lib/config/local_notifications para los permisos para las notificaciones locales
-    await requestPermissionLocalNotifications();
+    //si la propiedad para los permisos de las notificaciones locales no viene vacio
+    //hacemos un await a ese metodo
+    if (requestLocalNotificationsPermissions != null){
+      await requestLocalNotificationsPermissions!();
+    }
+
     //con add llamamos al evento creado en la clase NotificationStatusChanged
     //dentro de la clase  NotificationsEvent
     add( NotificationsStatusChanged(settings.authorizationStatus));

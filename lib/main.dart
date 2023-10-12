@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:push_app/config/local_notifications/local_notifications.dart';
 import 'package:push_app/config/router/app_router.dart';
 import 'package:push_app/presentation/blocs/bloc/notifications_bloc.dart';
 import 'config/theme/app_theme.dart';
@@ -51,11 +52,19 @@ void main() async{
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await NotificationsBloc.initializeFCM(); //llamamos al metodo estatico creado en NotificationsBloc para iniciar Firebase
 
+  //llamamos al metodo estatico de la clase que inicializa las notifiaciones locales
+  await LocalNotifications.initializeNotifications();
   //ponemos el bloc para controlar el estado en el punto mas alto de la aplicacion
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => NotificationsBloc())
+        BlocProvider(create: (_) => NotificationsBloc(
+          //mandamos las dos propiedades opcionales de la clase NotificationsBloc para el estado de la aplicacion
+          //mandamos la referencia de la funcion, llamamos al metodo estatico creado en lib/config/local_notifications para los permisos para las notificaciones locales
+          requestLocalNotificationsPermissions: LocalNotifications.requestPermissionLocalNotifications,
+          //mandamos la referencia de la funcion llamamos al metodo estatico creado en lib/config/local_notifications para mostrar las notificaciones
+          showLocalNotification: LocalNotifications.showLocalNotification
+        ))
       ], 
       child: const MainApp())
   );
